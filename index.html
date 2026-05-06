@@ -683,13 +683,44 @@ function selectRole(role, el) {
   currentRole = role;
 }
 
-function doLogin() {
+async function doLogin() {
   const login = document.getElementById('inp-login').value.trim();
   const pass  = document.getElementById('inp-pass').value.trim();
-  const user  = USERS[login];
-  if (!user || user.pass !== pass) { showToast('❌ Login yoki parol noto\'g\'ri!', '#ff6584'); return; }
-  currentUser = { ...user, login };
-  if (user.role === 'admin') showAdmin(); else showWorker();
+  if (!login || !pass) { showToast('❌ Login va parolni kiriting!', '#ff6584'); return; }
+  
+  // Admin tekshirish (local)
+  const adminUser = USERS[login];
+  if (adminUser && adminUser.pass === pass) {
+    currentUser = { ...adminUser, login };
+    if (adminUser.role === 'admin') showAdmin(); else showWorker();
+    return;
+  }
+  
+  // Ishchi tekshirish (API orqali)
+  try {
+    showToast('⏳ Tekshirilmoqda...');
+    const res = await fetch(API + '/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: login, password: pass })
+    });
+    const data = await res.json();
+    if (data.success) {
+      currentUser = { 
+        role: 'worker', 
+        name: data.worker.full_name,
+        position: data.worker.position,
+        avatar: data.worker.full_name[0],
+        login: login,
+        id: data.worker.id
+      };
+      showWorker();
+    } else {
+      showToast('❌ Login yoki parol noto\'g\'ri!', '#ff6584');
+    }
+  } catch(e) {
+    showToast('❌ Server bilan bog\'lanishda xato!', '#ff6584');
+  }
 }
 
 function showAdmin() {
