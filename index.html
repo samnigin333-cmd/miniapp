@@ -751,9 +751,10 @@ async function renderWorkers() {
         <div class="w-status"><div class="dot green"></div>Faol</div>
       </div>`;
     }).join('');
-  } catch(e) {
+ } catch(e) {
     el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--accent2)">Xato yuz berdi!</div>';
   }
+}
 
 function renderAllReports() {
   const el = document.getElementById('all-reports');
