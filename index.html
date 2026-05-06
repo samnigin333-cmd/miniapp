@@ -413,7 +413,12 @@
     </div>
 
     <button class="btn-primary" onclick="doLogin()">Kirish →</button>
-  </div>
+ document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('login-btn');
+  if (btn) {
+    btn.addEventListener('click', doLogin);
+  }
+}); </div>
 </div>
 
 <!-- ═══════════════════════════════════════ ADMIN ═══ -->
