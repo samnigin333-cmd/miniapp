@@ -737,18 +737,23 @@ function showWorker() {
   renderTasks(); renderBarChart('w-week-chart');
 }
 
-function renderWorkers() {
+async function renderWorkers() {
   const el = document.getElementById('worker-list');
-  el.innerHTML = WORKERS.map(w => {
-    const dot = w.status==='present'?'green':w.status==='late'?'yellow':'red';
-    const label = w.status==='present'?'Keldi':w.status==='late'?'Kech keldi':'Kelmadi';
-    return `<div class="worker-item fade-in">
-      <div class="w-avatar">${w.avatar}</div>
-      <div class="w-info"><div class="w-name">${w.name}</div><div class="w-role">${w.role}</div></div>
-      <div class="w-status"><div class="dot ${dot}"></div>${label}</div>
-    </div>`;
-  }).join('');
-}
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim)">Yuklanmoqda...</div>';
+  try {
+    const res = await fetch(API + '/workers');
+    const workers = await res.json();
+    el.innerHTML = workers.map(w => {
+      const avatar = w.full_name ? w.full_name[0] : '?';
+      return `<div class="worker-item fade-in">
+        <div class="w-avatar">${avatar}</div>
+        <div class="w-info"><div class="w-name">${w.full_name}</div><div class="w-role">${w.position || '—'}</div></div>
+        <div class="w-status"><div class="dot green"></div>Faol</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--accent2)">Xato yuz berdi!</div>';
+  }
 
 function renderAllReports() {
   const el = document.getElementById('all-reports');
